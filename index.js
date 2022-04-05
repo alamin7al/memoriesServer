@@ -43,8 +43,48 @@ async function run() {
         });
 
 
+        app.put('/user/:id', async (req, res) => {
+            const id = req.params.id
+            console.log(id);
+            const updateUser = req.body
+            const filter = { _id: ObjectId(id) }
+            const options = { upsert: true }
+
+            const updateDoc = {
+                $set: {
+                    name: updateUser.name,
+                    mulisectors: updateUser.mulisectors,
 
 
+                }
+            }
+            const result = await dataCollection.updateOne(filter, updateDoc, options)
+            res.send(result)
+        })
+
+
+
+
+
+
+
+
+
+        app.get('/user/:id', async (req, res) => {
+            const id = req.params.id
+            const query = { _id: ObjectId(id) }
+            const user = await dataCollection.findOne(query)
+            res.send(user)
+        })
+
+
+        app.delete('/user/:id', async (req, res) => {
+            const id = req.params.id
+            const quarry = { _id: ObjectId(id) }
+            const deleteData = await dataCollection.deleteOne(quarry)
+            res.send(deleteData)
+
+        })
 
 
 
