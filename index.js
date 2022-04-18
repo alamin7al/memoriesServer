@@ -23,70 +23,36 @@ async function run() {
     try {
         await client.connect()
         const database = client.db('data')
-        const dataCollection = database.collection('dataist')
+        const usdCollection = database.collection('usd')
+        const GBRCollection = database.collection('gbr')
+        const EurCollection = database.collection('eur')
 
 
 
-        app.get('/userlist', async (req, res) => {
-            const cursor = dataCollection.find({})
+        app.get('/usd', async (req, res) => {
+            const cursor = usdCollection.find({})
             const user = await cursor.toArray()
+            console.log(user);
             res.send(user)
         })
-
-        app.post('/userlist', async (req, res) => {
-            const service = req.body;
-            // console.log('hit the post api', service);
-
-            const result = await dataCollection.insertOne(service);
-            console.log(result);
-            res.send(result)
-        });
-
-
-        app.put('/user/:id', async (req, res) => {
-            const id = req.params.id
-            console.log(id);
-            const updateUser = req.body
-            const filter = { _id: ObjectId(id) }
-            const options = { upsert: true }
-
-            const updateDoc = {
-                $set: {
-                    name: updateUser.name,
-                    mulisectors: updateUser.mulisectors,
-
-
-                }
-            }
-            const result = await dataCollection.updateOne(filter, updateDoc, options)
-            res.send(result)
+        app.get('/gbr', async (req, res) => {
+            const cursor = GBRCollection.find({})
+            const user = await cursor.toArray()
+            console.log(user);
+            res.send(user)
         })
-
-
-
-
-
-
-
-
-
-        app.get('/user/:id', async (req, res) => {
-            const id = req.params.id
-            const query = { _id: ObjectId(id) }
-            const user = await dataCollection.findOne(query)
+        app.get('/eur', async (req, res) => {
+            const cursor = EurCollection.find({})
+            const user = await cursor.toArray()
+            console.log(user);
             res.send(user)
         })
 
 
-        app.delete('/user/:id', async (req, res) => {
-            const id = req.params.id
-            const quarry = { _id: ObjectId(id) }
-            const deleteData = await dataCollection.deleteOne(quarry)
-            res.send(deleteData)
 
-        })
+           
 
-
+        
 
 
         console.log('j');
