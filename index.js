@@ -24,35 +24,8 @@ async function run() {
         await client.connect()
         const database = client.db('data')
         //assignment code
-        const usdCollection = database.collection('usd')
-        const GBRCollection = database.collection('gbr')
-        const EurCollection = database.collection('eur')
-        //assignment code
         const userDataCollection = database.collection('user')
-
-
-        //assignment code
-        app.get('/usd', async (req, res) => {
-            const cursor = usdCollection.find({})
-            const user = await cursor.toArray()
-            console.log(user);
-            res.send(user)
-        })
-        app.get('/gbr', async (req, res) => {
-            const cursor = GBRCollection.find({})
-            const user = await cursor.toArray()
-            console.log(user);
-            res.send(user)
-        })
-        app.get('/eur', async (req, res) => {
-            const cursor = EurCollection.find({})
-            const user = await cursor.toArray()
-            console.log(user);
-            res.send(user)
-        })
-
-        //assignment code
-
+       
 
 
 
@@ -66,8 +39,21 @@ async function run() {
             // console.log('hit the post api', service); 
 
             const result = await userDataCollection.insertOne(user);
+            console.log(result);
             res.send(result)
         });
+
+        app.get('/user', async (req, res) => {
+            const cursor = userDataCollection.find({})
+            const user = await cursor.toArray()
+            res.send(user)
+        })
+
+
+
+
+
+
 
         app.get('/useremail', async (req, res) => {
             const email = req.query.email
@@ -76,10 +62,19 @@ async function run() {
             const user = await cursor.toArray()
             res.json(user)
         })
+ 
+        app.get('/singleuser/:id', async (req, res) => {
+            const id = req.params.id
+            const query = { _id: ObjectId(id) }
+            const user = await userDataCollection.findOne(query)
+            res.send(user)
+        })
 
-        app.put('/useremail', async (req, res) => {
+
+        app.put('/singleuser/:id', async (req, res) => {
+            const id = req.params.id
             const updateUser = req.body
-
+            const filter = { _id: ObjectId(id) }
             const options = { upsert: true }
 
             const updateDoc = {
@@ -98,15 +93,15 @@ async function run() {
 
                 }
             }
-            const result = await userDataCollection.updateOne(updateDoc, options)
+            const result = await userDataCollection.updateOne(filter, updateDoc, options)
             console.log(result);
             res.send(result)
         })
 
 
 
-
-
+     
+       
 
 
 
@@ -140,3 +135,31 @@ app.listen(port, () => {
     console.log('Runningg Server on port', port);
 })
 //m3Ny8UQlkzF69teR//doctor
+
+// const usdCollection = database.collection('usd')
+// const GBRCollection = database.collection('gbr')
+// const EurCollection = database.collection('eur')
+//assignment code
+
+
+//assignment code
+// app.get('/usd', async (req, res) => {
+//     const cursor = usdCollection.find({})
+//     const user = await cursor.toArray()
+//     console.log(user);
+//     res.send(user)
+// })
+// app.get('/gbr', async (req, res) => {
+//     const cursor = GBRCollection.find({})
+//     const user = await cursor.toArray()
+//     console.log(user);
+//     res.send(user)
+// })
+// app.get('/eur', async (req, res) => {
+//     const cursor = EurCollection.find({})
+//     const user = await cursor.toArray()
+//     console.log(user);
+//     res.send(user)
+// })
+
+// //assignment code
