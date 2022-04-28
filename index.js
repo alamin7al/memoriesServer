@@ -9,12 +9,14 @@ const { query } = require('express');
 const app = express();
 const port = process.env.PORT || 5000;
 
-
+const fileUpload = require('express-fileupload');
+const req = require('express/lib/request');
+const res = require('express/lib/response');
 
 // middleware
 app.use(cors());
 app.use(express.json());
-
+app.use(fileUpload())
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.ow5x2.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 console.log(uri);
@@ -25,6 +27,7 @@ async function run() {
         const database = client.db('data')
         //assignment code
         const userDataCollection = database.collection('user')
+        const blogDataCollection = database.collection('blog')
        
 
 
@@ -39,7 +42,6 @@ async function run() {
             // console.log('hit the post api', service); 
 
             const result = await userDataCollection.insertOne(user);
-            console.log(result);
             res.send(result)
         });
 
@@ -94,7 +96,6 @@ async function run() {
                 }
             }
             const result = await userDataCollection.updateOne(filter, updateDoc, options)
-            console.log(result);
             res.send(result)
         })
 
@@ -102,10 +103,28 @@ async function run() {
 
      
        
-
-
-
-
+        app.post('/blogdata', async (req, res) => {
+            const email = req.body.email;
+            const image = req.body.image;
+            const desc = req.body.desc;
+            const heding = req.body.heding;
+            const pic = req.files.image;
+            const date = req.files.date;
+            const picData = pic.data;
+            const encodedPic = picData.toString('base64');
+            const imageBuffer = Buffer.from(encodedPic, 'base64');
+            const bloginformation = {
+           image,desc,heding,date,email,
+                image: imageBuffer
+            }
+            const result = await blogDataCollection.insertOne(bloginformation);
+            res.json(result);
+        })
+        app.get('/blogdata', async (req, res) => {
+            const cursor = blogDataCollection.find({})
+            const user = await cursor.toArray()
+            res.send(user)
+        })
 
 
 
