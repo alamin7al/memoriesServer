@@ -28,6 +28,7 @@ async function run() {
         //assignment code
         const userDataCollection = database.collection('user')
         const blogDataCollection = database.collection('blog')
+        const faceDataCollection = database.collection('face')
        
 
 
@@ -120,6 +121,43 @@ async function run() {
             const result = await blogDataCollection.insertOne(bloginformation);
             res.json(result);
         })
+        app.post('/facedata', async (req, res) => {
+            const email = req.body.email;
+            const image = req.body.image;
+            const desc = req.body.desc;
+            const pic = req.files.image;
+            const date = req.files.date;
+            const picData = pic.data;
+            const encodedPic = picData.toString('base64');
+            const imageBuffer = Buffer.from(encodedPic, 'base64');
+            const bloginformation = {
+           image,desc,date,email,
+                image: imageBuffer
+            }
+            const result = await faceDataCollection.insertOne(bloginformation);
+            res.json(result);
+        })
+
+
+        app.get('/facedata', async (req, res) => {
+            const cursor = faceDataCollection.find({})
+            const user = await cursor.toArray()
+            res.send(user)
+        })
+
+
+        app.get('/facedata/:id', async (req, res) => {
+            const id = req.params.id
+            const query = { _id: ObjectId(id) }
+            const user = await faceDataCollection.findOne(query)
+            res.send(user)
+        })
+
+
+
+
+
+
         app.get('/blogdata', async (req, res) => {
             const cursor = blogDataCollection.find({})
             const user = await cursor.toArray()
