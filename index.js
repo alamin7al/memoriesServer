@@ -29,7 +29,7 @@ async function run() {
         const userDataCollection = database.collection('user')
         const blogDataCollection = database.collection('blog')
         const faceDataCollection = database.collection('face')
-       
+
 
 
 
@@ -65,7 +65,7 @@ async function run() {
             const user = await cursor.toArray()
             res.json(user)
         })
- 
+
         app.get('/singleuser/:id', async (req, res) => {
             const id = req.params.id
             const query = { _id: ObjectId(id) }
@@ -99,11 +99,27 @@ async function run() {
             const result = await userDataCollection.updateOne(filter, updateDoc, options)
             res.send(result)
         })
+        app.put('/facedata/:id', async (req, res) => {
+            const id = req.params.id
+            const updateUser = req.body
+            const filter = { _id: ObjectId(id) }
+            const options = { upsert: true }
+
+            const updateDoc = {
+                $set: {
+                    desc: updateUser.desc,
+                    commant: updateUser.commant,
+
+                }
+            }
+            const result = await faceDataCollection.updateOne(filter, updateDoc, options)
+            res.send(result)
+        })
 
 
 
-     
-       
+
+
         app.post('/blogdata', async (req, res) => {
             const email = req.body.email;
             const image = req.body.image;
@@ -115,7 +131,7 @@ async function run() {
             const encodedPic = picData.toString('base64');
             const imageBuffer = Buffer.from(encodedPic, 'base64');
             const bloginformation = {
-           image,desc,heding,date,email,
+                image, desc, heding, date, email,
                 image: imageBuffer
             }
             const result = await blogDataCollection.insertOne(bloginformation);
@@ -131,7 +147,7 @@ async function run() {
             const encodedPic = picData.toString('base64');
             const imageBuffer = Buffer.from(encodedPic, 'base64');
             const bloginformation = {
-           image,desc,date,email,
+                image, desc, date, email,
                 image: imageBuffer
             }
             const result = await faceDataCollection.insertOne(bloginformation);
@@ -153,7 +169,13 @@ async function run() {
             res.send(user)
         })
 
+        app.delete('/facedata/:id', async (req, res) => {
+            const id = req.params.id
+            const quarry = { _id: ObjectId(id) }
+            const deleteData = await faceDataCollection.deleteOne(quarry)
+            res.send(deleteData)
 
+        })
 
 
 
